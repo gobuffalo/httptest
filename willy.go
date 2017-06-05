@@ -3,6 +3,7 @@ package willie
 import (
 	"fmt"
 	"net/http"
+	"runtime"
 )
 
 type encodable interface {
@@ -17,6 +18,15 @@ type Willie struct {
 }
 
 func (w *Willie) Request(u string, args ...interface{}) *Request {
+	warningMsg := "Request is deprecated, and will be removed in a later version. Use HTML instead."
+	_, file, no, ok := runtime.Caller(1)
+	if ok {
+		warningMsg = fmt.Sprintf("%s Called from %s:%d", warningMsg, file, no)
+	}
+	return w.HTML(u, args...)
+}
+
+func (w *Willie) HTML(u string, args ...interface{}) *Request {
 	hs := map[string]string{}
 	for key, val := range w.Headers {
 		hs[key] = val

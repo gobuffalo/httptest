@@ -4,7 +4,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 
 	"github.com/ajg/form"
@@ -22,16 +21,6 @@ type Request struct {
 func (r *Request) SetBasicAuth(username, password string) {
 	r.Username = username
 	r.Password = password
-}
-
-func toReader(body interface{}) io.Reader {
-	modelType := reflect.TypeOf((*encodable)(nil)).Elem()
-	s := reflect.ValueOf(body)
-	t := s.Type()
-	if !t.Implements(modelType) {
-		body, _ = form.EncodeToValues(body)
-	}
-	return strings.NewReader(body.(encodable).Encode())
 }
 
 func (r *Request) Get() *Response {
@@ -56,6 +45,18 @@ func (r *Request) Put(body interface{}) *Response {
 	return r.perform(req)
 }
 
+func (r *Request) MultiPartPost(body interface{}) *Response {
+	req, _ := http.NewRequest("POST", r.URL, toReader(body))
+	r.Headers["Content-Type"] = "multipart/form-data"
+	return r.perform(req)
+}
+
+func (r *Request) MultiPartPut(body interface{}) *Response {
+	req, _ := http.NewRequest("PUT", r.URL, toReader(body))
+	r.Headers["Content-Type"] = "multipart/form-data"
+	return r.perform(req)
+}
+
 func (r *Request) perform(req *http.Request) *Response {
 	if r.Willie.HmaxSecret != "" {
 		hmax.SignRequest(req, []byte(r.Willie.HmaxSecret))
@@ -72,4 +73,11 @@ func (r *Request) perform(req *http.Request) *Response {
 	c := res.HeaderMap["Set-Cookie"]
 	r.Willie.Cookies = strings.Join(c, ";")
 	return res
+}
+
+func toReader(body interface{}) io.Reader {
+	if _, ok := body.(encodable); !ok {
+		body, _ = form.EncodeToValues(body)
+	}
+	return strings.NewReader(body.(encodable).Encode())
 }
