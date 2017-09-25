@@ -45,6 +45,12 @@ func (r *JSON) Put(body interface{}) *JSONResponse {
 	return r.perform(req)
 }
 
+func (r *JSON) Patch(body interface{}) *JSONResponse {
+	b, _ := json.Marshal(body)
+	req, _ := http.NewRequest("PATCH", r.URL, bytes.NewReader(b))
+	return r.perform(req)
+}
+
 func (r *JSON) perform(req *http.Request) *JSONResponse {
 	if r.Willie.HmaxSecret != "" {
 		hmax.SignRequest(req, []byte(r.Willie.HmaxSecret))

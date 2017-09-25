@@ -44,6 +44,12 @@ func JSONApp() http.Handler {
 		jb.Method = req.Method
 		json.NewEncoder(res).Encode(jb)
 	})
+	p.Patch("/patch", func(res http.ResponseWriter, req *http.Request) {
+		jb := jBody{}
+		json.NewDecoder(req.Body).Decode(&jb)
+		jb.Method = req.Method
+		json.NewEncoder(res).Encode(jb)
+	})
 	p.Post("/sessions/set", func(res http.ResponseWriter, req *http.Request) {
 		sess, _ := Store.Get(req, "my-session")
 		sess.Values["name"] = req.PostFormValue("name")
@@ -150,5 +156,31 @@ func Test_JSON_Put_Struct_Pointer(t *testing.T) {
 	jb := &jBody{}
 	res.Bind(jb)
 	r.Equal("PUT", jb.Method)
+	r.Equal("Mark", jb.Name)
+}
+
+func Test_JSON_Patch(t *testing.T) {
+	r := require.New(t)
+	w := willie.New(JSONApp())
+
+	req := w.JSON("/patch")
+	res := req.Patch(User{Name: "Mark"})
+
+	jb := &jBody{}
+	res.Bind(jb)
+	r.Equal("PATCH", jb.Method)
+	r.Equal("Mark", jb.Name)
+}
+
+func Test_JSON_Patch_Struct_Pointer(t *testing.T) {
+	r := require.New(t)
+	w := willie.New(JSONApp())
+
+	req := w.JSON("/patch")
+	res := req.Patch(&User{Name: "Mark"})
+
+	jb := &jBody{}
+	res.Bind(jb)
+	r.Equal("PATCH", jb.Method)
 	r.Equal("Mark", jb.Name)
 }
