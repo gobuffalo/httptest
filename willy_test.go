@@ -48,6 +48,19 @@ func App() http.Handler {
 			fmt.Fprint(res, "NAME:"+sess.Values["name"].(string))
 		}
 	})
+	p.Post("/up", func(res http.ResponseWriter, req *http.Request) {
+		if err := req.ParseMultipartForm(5 * 1024); err != nil {
+			res.WriteHeader(500)
+			fmt.Fprint(res, err.Error())
+		}
+		_, h, err := req.FormFile("MyFile")
+		if err != nil {
+			res.WriteHeader(500)
+			fmt.Fprint(res, err.Error())
+		}
+		fmt.Fprintln(res, req.FormValue("Name"))
+		fmt.Fprintln(res, h.Filename)
+	})
 	return p
 }
 
