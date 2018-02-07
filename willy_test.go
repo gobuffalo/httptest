@@ -3,12 +3,10 @@ package willie_test
 import (
 	"fmt"
 	"net/http"
-	"testing"
+	"strings"
 
 	"github.com/gorilla/pat"
 	"github.com/gorilla/sessions"
-	"github.com/markbates/willie"
-	"github.com/stretchr/testify/require"
 )
 
 var Store sessions.Store = sessions.NewCookieStore([]byte("something-very-secret"))
@@ -31,50 +29,40 @@ func App() http.Handler {
 	})
 	p.Post("/post", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(res, "METHOD:"+req.Method)
-		fmt.Fprint(res, "NAME:"+req.PostFormValue("name"))
+		renderForm(res, req)
 	})
 	p.Put("/put", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(res, "METHOD:"+req.Method)
-		fmt.Fprint(res, "NAME:"+req.PostFormValue("name"))
+		renderForm(res, req)
 	})
 	p.Post("/sessions/set", func(res http.ResponseWriter, req *http.Request) {
-		sess, _ := Store.Get(req, "my-session")
-		sess.Values["name"] = req.PostFormValue("name")
-		sess.Save(req, res)
+		applyFormToSession(res, req)
 	})
 	p.Get("/sessions/get", func(res http.ResponseWriter, req *http.Request) {
-		sess, _ := Store.Get(req, "my-session")
-		if sess.Values["name"] != nil {
-			fmt.Fprint(res, "NAME:"+sess.Values["name"].(string))
-		}
+		renderSession(res, req)
 	})
 	return p
 }
 
-func Test_Sessions(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-
-	res := w.Request("/sessions/get").Get()
-	r.NotContains(res.Body.String(), "mark")
-	w.Request("/sessions/set").Post(User{Name: "mark"})
-	res = w.Request("/sessions/get").Get()
-	r.Contains(res.Body.String(), "mark")
+func renderForm(res http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+	for k := range req.PostForm {
+		fmt.Fprintln(res, strings.ToUpper(k)+":"+req.PostFormValue(k))
+	}
 }
 
-func Test_Request_URL_Params(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-
-	req := w.Request("/foo?a=%s&b=%s", "A", "B")
-	r.Equal("/foo?a=A&b=B", req.URL)
+func applyFormToSession(res http.ResponseWriter, req *http.Request) {
+	req.ParseForm()
+	for k := range req.PostForm {
+		sess, _ := Store.Get(req, "my-session")
+		sess.Values[k] = req.PostFormValue(k)
+		sess.Save(req, res)
+	}
 }
 
-func Test_Request_Copies_Headers(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-	w.Headers["foo"] = "bar"
-
-	req := w.Request("/")
-	r.Equal("bar", req.Headers["foo"])
+func renderSession(res http.ResponseWriter, req *http.Request) {
+	sess, _ := Store.Get(req, "my-session")
+	for k := range sess.Values {
+		fmt.Fprintln(res, strings.ToUpper(k.(string))+":"+sess.Values[k].(string))
+	}
 }

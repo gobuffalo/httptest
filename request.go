@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/ajg/form"
 	"github.com/markbates/hmax"
 )
 
@@ -77,7 +76,8 @@ func (r *Request) perform(req *http.Request) *Response {
 
 func toReader(body interface{}) io.Reader {
 	if _, ok := body.(encodable); !ok {
-		body, _ = form.EncodeToValues(body)
+		body = EncodeToFormValues(body)
 	}
+
 	return strings.NewReader(body.(encodable).Encode())
 }
