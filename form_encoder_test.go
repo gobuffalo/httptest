@@ -20,7 +20,7 @@ func Test_FormEncoder(t *testing.T) {
 		Kids             int
 		DesiredGolangLvl float32
 		KidNames         []string
-		Notes            map[string]string
+		Notes            map[string]interface{}
 		Alias            Alias
 	}{
 		"Antonio",
@@ -31,9 +31,14 @@ func Test_FormEncoder(t *testing.T) {
 			"Marco-polo",
 			"Pancracia",
 		},
-		map[string]string{
+		map[string]interface{}{
 			"A": "B",
 			"C": "D",
+
+			//TODO: this still not covered
+			// "D": map[string]string{
+			// 	"E": "F",
+			// },
 		},
 		Alias{
 			"Tony",
@@ -41,7 +46,7 @@ func Test_FormEncoder(t *testing.T) {
 		},
 	}
 
-	encoded := willie.EncodeToFormValues(val)
+	encoded, _ := willie.EncodeToURLValues(val)
 
 	r.NotNil(encoded["Name"])
 	r.Equal("Antonio", encoded.Get("Name"))
@@ -52,7 +57,7 @@ func Test_FormEncoder(t *testing.T) {
 	r.Equal("Marco-polo", encoded.Get("KidNames[1]"))
 	r.Equal("Pancracia", encoded.Get("KidNames[2]"))
 
-	r.Equal("B", encoded.Get("Notes.A"))
+	r.Equal("B", encoded.Get("Notes[A]"))
 	r.Equal("Tony", encoded.Get("Alias.Name"))
 	r.Equal("Friendly", encoded.Get("Alias.Type"))
 }

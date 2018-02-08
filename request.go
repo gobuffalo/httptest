@@ -4,8 +4,11 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"reflect"
 	"strings"
 
+	"github.com/gobuffalo/buffalo/binding"
 	"github.com/markbates/hmax"
 )
 
@@ -44,18 +47,6 @@ func (r *Request) Put(body interface{}) *Response {
 	return r.perform(req)
 }
 
-func (r *Request) MultiPartPost(body interface{}) *Response {
-	req, _ := http.NewRequest("POST", r.URL, toReader(body))
-	r.Headers["Content-Type"] = "multipart/form-data"
-	return r.perform(req)
-}
-
-func (r *Request) MultiPartPut(body interface{}) *Response {
-	req, _ := http.NewRequest("PUT", r.URL, toReader(body))
-	r.Headers["Content-Type"] = "multipart/form-data"
-	return r.perform(req)
-}
-
 func (r *Request) perform(req *http.Request) *Response {
 	if r.Willie.HmaxSecret != "" {
 		hmax.SignRequest(req, []byte(r.Willie.HmaxSecret))
@@ -76,8 +67,30 @@ func (r *Request) perform(req *http.Request) *Response {
 
 func toReader(body interface{}) io.Reader {
 	if _, ok := body.(encodable); !ok {
-		body = EncodeToFormValues(body)
+		body, _ = EncodeToURLValues(body)
 	}
 
 	return strings.NewReader(body.(encodable).Encode())
+}
+
+func toURLValues(body interface{}) url.Values {
+	b := url.Values{}
+	m := map[string]interface{}{}
+	rv := reflect.Indirect(reflect.ValueOf(body))
+	rt := rv.Type()
+	for i := 0; i < rt.NumField(); i++ {
+		tf := rt.Field(i)
+		rf := rv.Field(i)
+		if _, ok := rf.Interface().(binding.File); ok {
+			continue
+		}
+		if n, ok := tf.Tag.Lookup("form"); ok {
+			m[n] = rf.Interface()
+			continue
+		}
+		m[tf.Name] = rf.Interface()
+	}
+
+	b, _ = EncodeToURLValues(m)
+	return b
 }
