@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"strconv"
+	"time"
 )
 
-//EncodeToURLValues encodes structs into forms
+//EncodeToURLValues encodes structs into url.Values
 func EncodeToURLValues(body interface{}) (url.Values, error) {
 	result := url.Values{}
 
@@ -48,9 +50,18 @@ func addValues(rtype reflect.Type, rvalue reflect.Value, values url.Values) erro
 
 func addFromField(namespace string, rtype reflect.Type, rvalue reflect.Value, values url.Values) {
 	switch rtype.Kind() {
-	case reflect.String, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Float32, reflect.Float64:
-		//TODO: float format
+	case reflect.String:
 		values.Add(namespace, fmt.Sprintf("%v", rvalue))
+	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
+		values.Add(namespace, strconv.FormatInt(rvalue.Int(), 10))
+	case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
+		values.Add(namespace, strconv.FormatUint(rvalue.Uint(), 10))
+	case reflect.Float32:
+		values.Add(namespace, strconv.FormatFloat(rvalue.Float(), 'f', -1, 32))
+	case reflect.Float64:
+		values.Add(namespace, strconv.FormatFloat(rvalue.Float(), 'f', -1, 64))
+	case reflect.Bool:
+		values.Add(namespace, strconv.FormatBool(rvalue.Bool()))
 	case reflect.Slice, reflect.Array:
 		for index := 0; index < rvalue.Len(); index++ {
 			k := fmt.Sprintf("%v[%v]", namespace, index)
@@ -67,6 +78,12 @@ func addFromField(namespace string, rtype reflect.Type, rvalue reflect.Value, va
 			addFromField(k, field, value, values)
 		}
 	case reflect.Struct:
+		if rvalue.Type() == reflect.TypeOf(time.Time{}) {
+			val := rvalue.Interface().(time.Time).Format(time.RFC3339)
+			values.Add(namespace, val)
+			return
+		}
+
 		for i := 0; i < rtype.NumField(); i++ {
 			value := rvalue.Field(i)
 			field := rtype.Field(i)

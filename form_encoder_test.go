@@ -1,7 +1,9 @@
 package willie_test
 
 import (
+	"log"
 	"testing"
+	"time"
 
 	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
@@ -20,8 +22,10 @@ func Test_FormEncoder(t *testing.T) {
 		Kids             int
 		DesiredGolangLvl float32
 		KidNames         []string
-		Notes            map[string]interface{}
+		Notes            map[string]string
+		Notes2           map[string][]string
 		Alias            Alias
+		DateCreated      time.Time
 	}{
 		"Antonio",
 		3,
@@ -31,33 +35,35 @@ func Test_FormEncoder(t *testing.T) {
 			"Marco-polo",
 			"Pancracia",
 		},
-		map[string]interface{}{
+		map[string]string{
 			"A": "B",
 			"C": "D",
-
-			//TODO: this still not covered
-			// "D": map[string]string{
-			// 	"E": "F",
-			// },
+			"D": "G",
+		},
+		map[string][]string{
+			"H": []string{"I", "J", "K"},
 		},
 		Alias{
 			"Tony",
 			"Friendly",
 		},
+		time.Now(),
 	}
 
-	encoded, _ := willie.EncodeToURLValues(val)
+	values, _ := willie.EncodeToURLValues(val)
 
-	r.NotNil(encoded["Name"])
-	r.Equal("Antonio", encoded.Get("Name"))
-	r.Equal("3", encoded.Get("Kids"))
-	r.Equal("99.1", encoded.Get("DesiredGolangLvl"))
+	log.Println(values)
 
-	r.Equal("Leopoldo", encoded.Get("KidNames[0]"))
-	r.Equal("Marco-polo", encoded.Get("KidNames[1]"))
-	r.Equal("Pancracia", encoded.Get("KidNames[2]"))
+	r.NotNil(values["Name"])
+	r.Equal("Antonio", values.Get("Name"))
+	r.Equal("3", values.Get("Kids"))
+	r.Equal("99.1", values.Get("DesiredGolangLvl"))
 
-	r.Equal("B", encoded.Get("Notes[A]"))
-	r.Equal("Tony", encoded.Get("Alias.Name"))
-	r.Equal("Friendly", encoded.Get("Alias.Type"))
+	r.Equal("Leopoldo", values.Get("KidNames[0]"))
+	r.Equal("Marco-polo", values.Get("KidNames[1]"))
+	r.Equal("Pancracia", values.Get("KidNames[2]"))
+
+	r.Equal("B", values.Get("Notes[A]"))
+	r.Equal("Tony", values.Get("Alias.Name"))
+	r.Equal("Friendly", values.Get("Alias.Type"))
 }
