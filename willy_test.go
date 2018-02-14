@@ -14,7 +14,7 @@ import (
 var Store sessions.Store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 type User struct {
-	Name string `form:"name"`
+	Name string `form:"name" xml:"name"`
 }
 
 func App() http.Handler {
