@@ -8,34 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Sessions(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-
-	res := w.Request("/sessions/get").Get()
-	r.NotContains(res.Body.String(), "mark")
-	w.Request("/sessions/set").Post(User{Name: "mark"})
-	res = w.Request("/sessions/get").Get()
-	r.Contains(res.Body.String(), "mark")
-}
-
-func Test_Request_URL_Params(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-
-	req := w.Request("/foo?a=%s&b=%s", "A", "B")
-	r.Equal("/foo?a=A&b=B", req.URL)
-}
-
-func Test_Request_Copies_Headers(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-	w.Headers["foo"] = "bar"
-
-	req := w.Request("/")
-	r.Equal("bar", req.Headers["foo"])
-}
-
 func Test_Request_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 	r := require.New(t)
 	w := willie.New(App())
@@ -98,7 +70,7 @@ func Test_Post_Values(t *testing.T) {
 
 	req := w.Request("/post")
 	vals := url.Values{}
-	vals.Add("Name", "Mark")
+	vals.Add("name", "Mark")
 	res := req.Post(vals)
 	r.Contains(res.Body.String(), "METHOD:POST")
 	r.Contains(res.Body.String(), "NAME:Mark")
@@ -130,24 +102,8 @@ func Test_Put_Values(t *testing.T) {
 
 	req := w.Request("/put")
 	vals := url.Values{}
-	vals.Add("Name", "Mark")
+	vals.Add("name", "Mark")
 	res := req.Put(vals)
 	r.Contains(res.Body.String(), "METHOD:PUT")
 	r.Contains(res.Body.String(), "NAME:Mark")
-}
-
-func Test_Put_Struct(t *testing.T) {
-	r := require.New(t)
-	w := willie.New(App())
-
-	req := w.Request("/put")
-	vals := struct {
-		Name  string
-		Email string
-	}{"Antonio", "ap@ap.com"}
-
-	res := req.Put(vals)
-
-	r.Contains(res.Body.String(), "METHOD:PUT")
-	r.Contains(res.Body.String(), "EMAIL:ap@ap.com")
 }

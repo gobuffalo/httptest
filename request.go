@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/ajg/form"
 	"github.com/gobuffalo/buffalo/binding"
 	"github.com/markbates/hmax"
 )
@@ -67,9 +68,8 @@ func (r *Request) perform(req *http.Request) *Response {
 
 func toReader(body interface{}) io.Reader {
 	if _, ok := body.(encodable); !ok {
-		body, _ = EncodeToURLValues(body)
+		body, _ = form.EncodeToValues(body)
 	}
-
 	return strings.NewReader(body.(encodable).Encode())
 }
 
@@ -91,6 +91,6 @@ func toURLValues(body interface{}) url.Values {
 		m[tf.Name] = rf.Interface()
 	}
 
-	b, _ = EncodeToURLValues(m)
+	b, _ = form.EncodeToValues(m)
 	return b
 }
