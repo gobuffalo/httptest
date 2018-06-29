@@ -5,11 +5,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"reflect"
 	"strings"
 
-	"github.com/ajg/form"
-	"github.com/gobuffalo/buffalo/binding"
+	"github.com/go-playground/form"
 	"github.com/markbates/hmax"
 )
 
@@ -68,29 +66,15 @@ func (r *Request) perform(req *http.Request) *Response {
 
 func toReader(body interface{}) io.Reader {
 	if _, ok := body.(encodable); !ok {
-		body, _ = form.EncodeToValues(body)
+		encoder := form.NewEncoder()
+		body, _ = encoder.Encode(body)
 	}
 	return strings.NewReader(body.(encodable).Encode())
 }
 
 func toURLValues(body interface{}) url.Values {
-	b := url.Values{}
-	m := map[string]interface{}{}
-	rv := reflect.Indirect(reflect.ValueOf(body))
-	rt := rv.Type()
-	for i := 0; i < rt.NumField(); i++ {
-		tf := rt.Field(i)
-		rf := rv.Field(i)
-		if _, ok := rf.Interface().(binding.File); ok {
-			continue
-		}
-		if n, ok := tf.Tag.Lookup("form"); ok {
-			m[n] = rf.Interface()
-			continue
-		}
-		m[tf.Name] = rf.Interface()
-	}
+	encoder := form.NewEncoder()
+	b, _ := encoder.Encode(body)
 
-	b, _ = form.EncodeToValues(m)
 	return b
 }

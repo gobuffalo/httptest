@@ -3,8 +3,10 @@ module github.com/markbates/willie
 require (
 	github.com/ajg/form v0.0.0-20160822230020-523a5da1a92f
 	github.com/dgrijalva/jwt-go v1.0.2
+	github.com/go-playground/form v1.10.0
 	github.com/gobuffalo/buffalo v0.12.0
 	github.com/gobuffalo/envy v1.6.3
+	github.com/gorilla/pat v0.0.0-20180118222023-199c85a7f6d1
 	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0
 	github.com/markbates/going v1.0.0
 	github.com/markbates/hmax v1.0.0
