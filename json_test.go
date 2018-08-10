@@ -142,7 +142,7 @@ func Test_JSON_Post_Struct_Pointer(t *testing.T) {
 
 func Test_JSON_Post_Set_Basic_Auth(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/post")
 	req.Username = "willie_username"
