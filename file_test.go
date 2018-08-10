@@ -1,16 +1,15 @@
-package willie_test
+package willie
 
 import (
 	"os"
 	"testing"
 
-	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_FileUpload(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	f := struct {
 		Name string
@@ -18,7 +17,7 @@ func Test_FileUpload(t *testing.T) {
 
 	rr, err := os.Open("./file_test.go")
 	r.NoError(err)
-	wf := willie.File{
+	wf := File{
 		ParamName: "MyFile",
 		FileName:  "foo.go",
 		Reader:    rr,

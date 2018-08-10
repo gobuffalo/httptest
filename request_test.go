@@ -1,16 +1,15 @@
-package willie_test
+package willie
 
 import (
 	"net/url"
 	"testing"
 
-	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Request_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 	w.Headers["foo"] = "bar"
 
 	req := w.Request("/")
@@ -21,7 +20,7 @@ func Test_Request_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 
 func Test_Get(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/get")
 	r.Equal("/get", req.URL)
@@ -34,7 +33,7 @@ func Test_Get(t *testing.T) {
 
 func Test_Delete(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/delete")
 	r.Equal("/delete", req.URL)
@@ -46,7 +45,7 @@ func Test_Delete(t *testing.T) {
 
 func Test_Post_Struct(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/post")
 	res := req.Post(User{Name: "Mark"})
@@ -56,7 +55,7 @@ func Test_Post_Struct(t *testing.T) {
 
 func Test_Post_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/post")
 	res := req.Post(&User{Name: "Mark"})
@@ -66,7 +65,7 @@ func Test_Post_Struct_Pointer(t *testing.T) {
 
 func Test_Post_Values(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/post")
 	vals := url.Values{}
@@ -78,7 +77,7 @@ func Test_Post_Values(t *testing.T) {
 
 func Test_Put(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/put")
 	res := req.Put(User{Name: "Mark"})
@@ -88,7 +87,7 @@ func Test_Put(t *testing.T) {
 
 func Test_Put_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/put")
 	res := req.Put(&User{Name: "Mark"})
@@ -98,7 +97,7 @@ func Test_Put_Struct_Pointer(t *testing.T) {
 
 func Test_Put_Values(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/put")
 	vals := url.Values{}

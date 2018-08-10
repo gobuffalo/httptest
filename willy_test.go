@@ -1,4 +1,4 @@
-package willie_test
+package willie
 
 import (
 	"fmt"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/gorilla/pat"
 	"github.com/gorilla/sessions"
-	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
 
@@ -66,7 +65,7 @@ func App() http.Handler {
 
 func Test_Sessions(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	res := w.Request("/sessions/get").Get()
 	r.NotContains(res.Body.String(), "mark")
@@ -77,7 +76,7 @@ func Test_Sessions(t *testing.T) {
 
 func Test_Request_URL_Params(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 
 	req := w.Request("/foo?a=%s&b=%s", "A", "B")
 	r.Equal("/foo?a=A&b=B", req.URL)
@@ -85,7 +84,7 @@ func Test_Request_URL_Params(t *testing.T) {
 
 func Test_Request_Copies_Headers(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(App())
+	w := New(App())
 	w.Headers["foo"] = "bar"
 
 	req := w.Request("/")

@@ -1,4 +1,4 @@
-package willie_test
+package willie
 
 import (
 	"encoding/xml"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/gorilla/pat"
-	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
 
@@ -69,7 +68,7 @@ func XMLApp() http.Handler {
 
 func Test_XML_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 	w.Headers["foo"] = "bar"
 
 	req := w.XML("/")
@@ -80,7 +79,7 @@ func Test_XML_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 
 func Test_XML_Get(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/get")
 	r.Equal("/get", req.URL)
@@ -95,7 +94,7 @@ func Test_XML_Get(t *testing.T) {
 
 func Test_XML_Delete(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/delete")
 	r.Equal("/delete", req.URL)
@@ -109,7 +108,7 @@ func Test_XML_Delete(t *testing.T) {
 
 func Test_XML_Post_Struct(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/post")
 	res := req.Post(User{Name: "Mark"})
@@ -122,7 +121,7 @@ func Test_XML_Post_Struct(t *testing.T) {
 
 func Test_XML_Post_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/post")
 	res := req.Post(&User{Name: "Mark"})
@@ -135,7 +134,7 @@ func Test_XML_Post_Struct_Pointer(t *testing.T) {
 
 func Test_XML_Put(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/put")
 	res := req.Put(User{Name: "Mark"})
@@ -148,7 +147,7 @@ func Test_XML_Put(t *testing.T) {
 
 func Test_XML_Put_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/put")
 	res := req.Put(&User{Name: "Mark"})
@@ -161,7 +160,7 @@ func Test_XML_Put_Struct_Pointer(t *testing.T) {
 
 func Test_XML_Patch(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/patch")
 	res := req.Patch(User{Name: "Mark"})
@@ -174,7 +173,7 @@ func Test_XML_Patch(t *testing.T) {
 
 func Test_XML_Patch_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(XMLApp())
+	w := New(XMLApp())
 
 	req := w.XML("/patch")
 	res := req.Patch(&User{Name: "Mark"})

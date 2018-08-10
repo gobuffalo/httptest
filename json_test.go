@@ -1,4 +1,4 @@
-package willie_test
+package willie
 
 import (
 	"encoding/json"
@@ -6,14 +6,15 @@ import (
 	"testing"
 
 	"github.com/gorilla/pat"
-	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
 
 type jBody struct {
-	Method  string `json:"method"`
-	Name    string `json:"name"`
-	Message string `json:"message"`
+	Method   string `json:"method"`
+	Name     string `json:"name"`
+	Message  string `json:"message"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func JSONApp() http.Handler {
@@ -34,6 +35,10 @@ func JSONApp() http.Handler {
 	})
 	p.Post("/post", func(res http.ResponseWriter, req *http.Request) {
 		jb := jBody{}
+		if u, p, ok := req.BasicAuth(); ok {
+			jb.Username = u
+			jb.Password = p
+		}
 		json.NewDecoder(req.Body).Decode(&jb)
 		jb.Method = req.Method
 		json.NewEncoder(res).Encode(jb)
@@ -69,7 +74,7 @@ func JSONApp() http.Handler {
 
 func Test_JSON_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 	w.Headers["foo"] = "bar"
 
 	req := w.JSON("/")
@@ -80,7 +85,7 @@ func Test_JSON_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 
 func Test_JSON_Get(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/get")
 	r.Equal("/get", req.URL)
@@ -95,7 +100,7 @@ func Test_JSON_Get(t *testing.T) {
 
 func Test_JSON_Delete(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/delete")
 	r.Equal("/delete", req.URL)
@@ -109,7 +114,7 @@ func Test_JSON_Delete(t *testing.T) {
 
 func Test_JSON_Post_Struct(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/post")
 	res := req.Post(User{Name: "Mark"})
@@ -122,7 +127,7 @@ func Test_JSON_Post_Struct(t *testing.T) {
 
 func Test_JSON_Post_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/post")
 	res := req.Post(&User{Name: "Mark"})
@@ -131,11 +136,30 @@ func Test_JSON_Post_Struct_Pointer(t *testing.T) {
 	res.Bind(jb)
 	r.Equal("POST", jb.Method)
 	r.Equal("Mark", jb.Name)
+	r.Equal("", jb.Username)
+	r.Equal("", jb.Password)
+}
+
+func Test_JSON_Post_Set_Basic_Auth(t *testing.T) {
+	r := require.New(t)
+	w := New(JSONApp())
+
+	req := w.JSON("/post")
+	req.Username = "willie_username"
+	req.Password = "willie_password"
+	res := req.Post(&User{Name: "Mark"})
+
+	jb := &jBody{}
+	res.Bind(jb)
+	r.Equal("POST", jb.Method)
+	r.Equal("Mark", jb.Name)
+	r.Equal("willie_username", jb.Username)
+	r.Equal("willie_password", jb.Password)
 }
 
 func Test_JSON_Put(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/put")
 	res := req.Put(User{Name: "Mark"})
@@ -148,7 +172,7 @@ func Test_JSON_Put(t *testing.T) {
 
 func Test_JSON_Put_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/put")
 	res := req.Put(&User{Name: "Mark"})
@@ -161,7 +185,7 @@ func Test_JSON_Put_Struct_Pointer(t *testing.T) {
 
 func Test_JSON_Patch(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/patch")
 	res := req.Patch(User{Name: "Mark"})
@@ -174,7 +198,7 @@ func Test_JSON_Patch(t *testing.T) {
 
 func Test_JSON_Patch_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/patch")
 	res := req.Patch(&User{Name: "Mark"})
