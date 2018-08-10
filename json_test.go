@@ -1,4 +1,4 @@
-package willie_test
+package willie
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/gorilla/pat"
-	"github.com/markbates/willie"
 	"github.com/stretchr/testify/require"
 )
 
@@ -69,7 +68,7 @@ func JSONApp() http.Handler {
 
 func Test_JSON_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 	w.Headers["foo"] = "bar"
 
 	req := w.JSON("/")
@@ -80,7 +79,7 @@ func Test_JSON_Headers_Dont_Overwrite_App_Headers(t *testing.T) {
 
 func Test_JSON_Get(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/get")
 	r.Equal("/get", req.URL)
@@ -95,7 +94,7 @@ func Test_JSON_Get(t *testing.T) {
 
 func Test_JSON_Delete(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/delete")
 	r.Equal("/delete", req.URL)
@@ -109,7 +108,7 @@ func Test_JSON_Delete(t *testing.T) {
 
 func Test_JSON_Post_Struct(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/post")
 	res := req.Post(User{Name: "Mark"})
@@ -122,7 +121,7 @@ func Test_JSON_Post_Struct(t *testing.T) {
 
 func Test_JSON_Post_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/post")
 	res := req.Post(&User{Name: "Mark"})
@@ -135,7 +134,7 @@ func Test_JSON_Post_Struct_Pointer(t *testing.T) {
 
 func Test_JSON_Put(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/put")
 	res := req.Put(User{Name: "Mark"})
@@ -148,7 +147,7 @@ func Test_JSON_Put(t *testing.T) {
 
 func Test_JSON_Put_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/put")
 	res := req.Put(&User{Name: "Mark"})
@@ -161,7 +160,7 @@ func Test_JSON_Put_Struct_Pointer(t *testing.T) {
 
 func Test_JSON_Patch(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/patch")
 	res := req.Patch(User{Name: "Mark"})
@@ -174,7 +173,7 @@ func Test_JSON_Patch(t *testing.T) {
 
 func Test_JSON_Patch_Struct_Pointer(t *testing.T) {
 	r := require.New(t)
-	w := willie.New(JSONApp())
+	w := New(JSONApp())
 
 	req := w.JSON("/patch")
 	res := req.Patch(&User{Name: "Mark"})
