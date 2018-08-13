@@ -56,6 +56,7 @@ github.com/joho/godotenv v1.2.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqx
 github.com/lib/pq v0.0.0-20180523175426-90697d60dd84/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/markbates/deplist v0.0.0-20170926152145-5ae023fef618/go.mod h1:Qj7ugIJMbn0bPEyqh61Ovd/0sw+Erz0gwyWClM0zdHA=
 github.com/markbates/deplist v1.0.0/go.mod h1:Qj7ugIJMbn0bPEyqh61Ovd/0sw+Erz0gwyWClM0zdHA=
+github.com/markbates/going v1.0.0 h1:DQw0ZP7NbNlFGcKbcE/IVSOAFzScxRtLpd0rLMzLhq0=
 github.com/markbates/going v1.0.0/go.mod h1:I6mnB4BPnEeqo85ynXIx1ZFLLbtiLHNXVgWeFO9OGOA=
 github.com/markbates/grift v0.0.0-20180319170132-76f93617a788/go.mod h1:6qyNEZSY8v6duE2tBtO/tPgBvxhT7g7DnQoIYpEyCfw=
 github.com/markbates/grift v1.0.0/go.mod h1:6qyNEZSY8v6duE2tBtO/tPgBvxhT7g7DnQoIYpEyCfw=
@@ -80,6 +81,7 @@ github.com/monoculum/formam v0.0.0-20170814190438-f25191ae7744 h1:VDVBGYo5P2IuOH
 github.com/monoculum/formam v0.0.0-20170814190438-f25191ae7744/go.mod h1:RKgILGEJq24YyJ2ban8EO0RUVSJlF1pGsEvoLEACr/Q=
 github.com/nicksnyder/go-i18n v1.10.0/go.mod h1:HrK7VCrbOvQoUAQ7Vpy7i87N7JZZZ7R2xBGjv0j365Q=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
+github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
