@@ -3,7 +3,20 @@ package httptest
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 )
+
+// map the std httptest package for ease
+const DefaultRemoteAddr = httptest.DefaultRemoteAddr
+
+var NewServer = httptest.NewServer
+var NewRequest = httptest.NewRequest
+var NewRecorder = httptest.NewRecorder
+var NewTLSServer = httptest.NewTLSServer
+var NewUnstartedServer = httptest.NewUnstartedServer
+
+type ResponseRecorder = httptest.ResponseRecorder
+type Server = httptest.Server
 
 type encodable interface {
 	Encode() string
