@@ -17,6 +17,4 @@ $ go get -u -v github.com/gobuffalo/httptest
 
 ## Usage
 
-```bash
-$ buffalo <%= opts.ShortName %> --help
-```
+**PR PLEASE** :)
