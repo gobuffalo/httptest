@@ -1,4 +1,4 @@
-package willie
+package httptest
 
 import "net/http/httptest"
 

@@ -1,11 +1,10 @@
-package willie
+package httptest
 
 import (
 	"encoding/json"
 	"net/http"
 	"testing"
 
-	"github.com/gorilla/pat"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,22 +17,22 @@ type jBody struct {
 }
 
 func JSONApp() http.Handler {
-	p := pat.New()
-	p.Get("/get", func(res http.ResponseWriter, req *http.Request) {
+	p := &mux{}
+	p.Handle("GET", "/get", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		json.NewEncoder(res).Encode(jBody{
 			Method:  req.Method,
 			Message: "Hello from Get!",
 		})
 	})
-	p.Delete("/delete", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("DELETE", "/delete", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		json.NewEncoder(res).Encode(jBody{
 			Method:  req.Method,
 			Message: "Goodbye",
 		})
 	})
-	p.Post("/post", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("POST", "/post", func(res http.ResponseWriter, req *http.Request) {
 		jb := jBody{}
 		if u, p, ok := req.BasicAuth(); ok {
 			jb.Username = u
@@ -43,24 +42,24 @@ func JSONApp() http.Handler {
 		jb.Method = req.Method
 		json.NewEncoder(res).Encode(jb)
 	})
-	p.Put("/put", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("PUT", "/put", func(res http.ResponseWriter, req *http.Request) {
 		jb := jBody{}
 		json.NewDecoder(req.Body).Decode(&jb)
 		jb.Method = req.Method
 		json.NewEncoder(res).Encode(jb)
 	})
-	p.Patch("/patch", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("PATCH", "/patch", func(res http.ResponseWriter, req *http.Request) {
 		jb := jBody{}
 		json.NewDecoder(req.Body).Decode(&jb)
 		jb.Method = req.Method
 		json.NewEncoder(res).Encode(jb)
 	})
-	p.Post("/sessions/set", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("POST", "/sessions/set", func(res http.ResponseWriter, req *http.Request) {
 		sess, _ := Store.Get(req, "my-session")
 		sess.Values["name"] = req.PostFormValue("name")
 		sess.Save(req, res)
 	})
-	p.Get("/sessions/get", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("GET", "/sessions/get", func(res http.ResponseWriter, req *http.Request) {
 		sess, _ := Store.Get(req, "my-session")
 		if sess.Values["name"] != nil {
 			json.NewEncoder(res).Encode(jBody{
@@ -145,16 +144,16 @@ func Test_JSON_Post_Set_Basic_Auth(t *testing.T) {
 	w := New(JSONApp())
 
 	req := w.JSON("/post")
-	req.Username = "willie_username"
-	req.Password = "willie_password"
+	req.Username = "httptest_username"
+	req.Password = "httptest_password"
 	res := req.Post(&User{Name: "Mark"})
 
 	jb := &jBody{}
 	res.Bind(jb)
 	r.Equal("POST", jb.Method)
 	r.Equal("Mark", jb.Name)
-	r.Equal("willie_username", jb.Username)
-	r.Equal("willie_password", jb.Password)
+	r.Equal("httptest_username", jb.Username)
+	r.Equal("httptest_password", jb.Password)
 }
 
 func Test_JSON_Put(t *testing.T) {

@@ -1,11 +1,10 @@
-package willie
+package httptest
 
 import (
 	"encoding/xml"
 	"net/http"
 	"testing"
 
-	"github.com/gorilla/pat"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,45 +15,45 @@ type xBody struct {
 }
 
 func XMLApp() http.Handler {
-	p := pat.New()
-	p.Get("/get", func(res http.ResponseWriter, req *http.Request) {
+	p := &mux{}
+	p.Handle("GET", "/get", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		xml.NewEncoder(res).Encode(xBody{
 			Method:  req.Method,
 			Message: "Hello from Get!",
 		})
 	})
-	p.Delete("/delete", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("DELETE", "/delete", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		xml.NewEncoder(res).Encode(xBody{
 			Method:  req.Method,
 			Message: "Goodbye",
 		})
 	})
-	p.Post("/post", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("POST", "/post", func(res http.ResponseWriter, req *http.Request) {
 		jb := xBody{}
 		xml.NewDecoder(req.Body).Decode(&jb)
 		jb.Method = req.Method
 		xml.NewEncoder(res).Encode(jb)
 	})
-	p.Put("/put", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("PUT", "/put", func(res http.ResponseWriter, req *http.Request) {
 		jb := xBody{}
 		xml.NewDecoder(req.Body).Decode(&jb)
 		jb.Method = req.Method
 		xml.NewEncoder(res).Encode(jb)
 	})
-	p.Patch("/patch", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("PATCH", "/patch", func(res http.ResponseWriter, req *http.Request) {
 		jb := xBody{}
 		xml.NewDecoder(req.Body).Decode(&jb)
 		jb.Method = req.Method
 		xml.NewEncoder(res).Encode(jb)
 	})
-	p.Post("/sessions/set", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("POST", "/sessions/set", func(res http.ResponseWriter, req *http.Request) {
 		sess, _ := Store.Get(req, "my-session")
 		sess.Values["name"] = req.PostFormValue("name")
 		sess.Save(req, res)
 	})
-	p.Get("/sessions/get", func(res http.ResponseWriter, req *http.Request) {
+	p.Handle("GET", "/sessions/get", func(res http.ResponseWriter, req *http.Request) {
 		sess, _ := Store.Get(req, "my-session")
 		if sess.Values["name"] != nil {
 			xml.NewEncoder(res).Encode(xBody{

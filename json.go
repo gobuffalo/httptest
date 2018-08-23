@@ -1,4 +1,4 @@
-package willie
+package httptest
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 
 type JSON struct {
 	URL      string
-	Willie   *Willie
+	handler  *handler
 	Headers  map[string]string
 	Username string
 	Password string
@@ -54,8 +54,8 @@ func (r *JSON) Patch(body interface{}) *JSONResponse {
 }
 
 func (r *JSON) perform(req *http.Request) *JSONResponse {
-	if r.Willie.HmaxSecret != "" {
-		hmax.SignRequest(req, []byte(r.Willie.HmaxSecret))
+	if r.handler.HmaxSecret != "" {
+		hmax.SignRequest(req, []byte(r.handler.HmaxSecret))
 	}
 	if r.Username != "" || r.Password != "" {
 		req.SetBasicAuth(r.Username, r.Password)
@@ -64,8 +64,8 @@ func (r *JSON) perform(req *http.Request) *JSONResponse {
 	for key, value := range r.Headers {
 		req.Header.Set(key, value)
 	}
-	req.Header.Set("Cookie", r.Willie.Cookies)
-	r.Willie.ServeHTTP(res, req)
-	r.Willie.Cookies = res.Header().Get("Set-Cookie")
+	req.Header.Set("Cookie", r.handler.Cookies)
+	r.handler.ServeHTTP(res, req)
+	r.handler.Cookies = res.Header().Get("Set-Cookie")
 	return res
 }

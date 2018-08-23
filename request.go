@@ -1,7 +1,8 @@
-package willie
+package httptest
 
 import (
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -9,13 +10,12 @@ import (
 	"strings"
 
 	"github.com/ajg/form"
-	"github.com/gobuffalo/buffalo/binding"
 	"github.com/markbates/hmax"
 )
 
 type Request struct {
 	URL      string
-	Willie   *Willie
+	handler  *handler
 	Headers  map[string]string
 	Username string
 	Password string
@@ -49,8 +49,8 @@ func (r *Request) Put(body interface{}) *Response {
 }
 
 func (r *Request) perform(req *http.Request) *Response {
-	if r.Willie.HmaxSecret != "" {
-		hmax.SignRequest(req, []byte(r.Willie.HmaxSecret))
+	if r.handler.HmaxSecret != "" {
+		hmax.SignRequest(req, []byte(r.handler.HmaxSecret))
 	}
 	if r.Username != "" || r.Password != "" {
 		req.SetBasicAuth(r.Username, r.Password)
@@ -59,10 +59,10 @@ func (r *Request) perform(req *http.Request) *Response {
 	for key, value := range r.Headers {
 		req.Header.Set(key, value)
 	}
-	req.Header.Set("Cookie", r.Willie.Cookies)
-	r.Willie.ServeHTTP(res, req)
+	req.Header.Set("Cookie", r.handler.Cookies)
+	r.handler.ServeHTTP(res, req)
 	c := res.HeaderMap["Set-Cookie"]
-	r.Willie.Cookies = strings.Join(c, ";")
+	r.handler.Cookies = strings.Join(c, ";")
 	return res
 }
 
@@ -81,7 +81,7 @@ func toURLValues(body interface{}) url.Values {
 	for i := 0; i < rt.NumField(); i++ {
 		tf := rt.Field(i)
 		rf := rv.Field(i)
-		if _, ok := rf.Interface().(binding.File); ok {
+		if _, ok := rf.Interface().(multipart.File); ok {
 			continue
 		}
 		if n, ok := tf.Tag.Lookup("form"); ok {
