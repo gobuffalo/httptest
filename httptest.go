@@ -1,3 +1,6 @@
+/*
+Package httptest was formerly known as [https://github.com/markbates/willie](https://github.com/markbates/willie). It is used to test HTTP applications easily.
+*/
 package httptest
 
 import (
