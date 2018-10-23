@@ -49,7 +49,7 @@ func (w *handler) JSON(u string, args ...interface{}) *JSON {
 	for key, val := range w.Headers {
 		hs[key] = val
 	}
-	hs["Content-Type"] = "application/json"
+	hs["Accept"] = "application/json"
 	return &JSON{
 		URL:     fmt.Sprintf(u, args...),
 		handler: w,
@@ -62,7 +62,7 @@ func (w *handler) XML(u string, args ...interface{}) *XML {
 	for key, val := range w.Headers {
 		hs[key] = val
 	}
-	hs["Content-Type"] = "application/xml"
+	hs["Accept"] = "application/xml"
 	return &XML{
 		URL:     fmt.Sprintf(u, args...),
 		handler: w,
