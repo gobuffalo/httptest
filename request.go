@@ -59,6 +59,7 @@ func (r *Request) perform(req *http.Request) *Response {
 	for key, value := range r.Headers {
 		req.Header.Set(key, value)
 	}
+	req.RequestURI = r.URL
 	req.Header.Set("Cookie", r.handler.Cookies)
 	r.handler.ServeHTTP(res, req)
 	c := res.HeaderMap["Set-Cookie"]
