@@ -37,7 +37,7 @@ func (w *Handler) HTML(u string, args ...interface{}) *Request {
 	for key, val := range w.Headers {
 		hs[key] = val
 	}
-	hs["Accept"] = "application/html"	
+	hs["Accept"] = "application/html"
 	return &Request{
 		URL:     fmt.Sprintf(u, args...),
 		handler: w,
