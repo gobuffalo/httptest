@@ -30,7 +30,6 @@ func (m mux) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	}
 	res.WriteHeader(500)
 	fmt.Fprintf(res, "couldn't find map for %s", req.URL.Path)
-	return
 }
 
 func (m *mux) Handle(verb string, route string, h http.HandlerFunc) {

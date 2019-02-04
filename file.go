@@ -15,11 +15,6 @@ type File struct {
 	FileName  string
 }
 
-type fileHandler struct {
-	io.Reader
-	*multipart.Writer
-}
-
 func (r *Request) MultiPartPost(body interface{}, files ...File) (*Response, error) {
 	req, err := newMultipart(r.URL, "POST", body, files...)
 	if err != nil {
@@ -49,6 +44,9 @@ func newMultipart(url string, method string, body interface{}, files ...File) (*
 			return nil, errors.WithStack(err)
 		}
 		_, err = io.Copy(part, f)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
 	}
 
 	for k, v := range toURLValues(body) {

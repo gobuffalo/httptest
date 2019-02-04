@@ -62,8 +62,8 @@ func (r *Request) perform(req *http.Request) *Response {
 	req.RequestURI = r.URL
 	req.Header.Set("Cookie", r.handler.Cookies)
 	r.handler.ServeHTTP(res, req)
-	c := res.HeaderMap["Set-Cookie"]
-	r.handler.Cookies = strings.Join(c, ";")
+	c := res.Result().Header.Get("Set-Cookie")
+	r.handler.Cookies = c
 	return res
 }
 
@@ -75,7 +75,6 @@ func toReader(body interface{}) io.Reader {
 }
 
 func toURLValues(body interface{}) url.Values {
-	b := url.Values{}
 	m := map[string]interface{}{}
 	rv := reflect.Indirect(reflect.ValueOf(body))
 	rt := rv.Type()
@@ -92,6 +91,6 @@ func toURLValues(body interface{}) url.Values {
 		m[tf.Name] = rf.Interface()
 	}
 
-	b, _ = form.EncodeToValues(m)
+	b, _ := form.EncodeToValues(m)
 	return b
 }
