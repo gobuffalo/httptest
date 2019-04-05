@@ -10,9 +10,11 @@ import (
 )
 
 type XML struct {
-	URL     string
-	handler *Handler
-	Headers map[string]string
+	URL      string
+	handler  *Handler
+	Headers  map[string]string
+	Username string
+	Password string
 }
 
 type XMLResponse struct {
@@ -54,6 +56,9 @@ func (r *XML) Patch(body interface{}) *XMLResponse {
 func (r *XML) perform(req *http.Request) *XMLResponse {
 	if r.handler.HmaxSecret != "" {
 		hmax.SignRequest(req, []byte(r.handler.HmaxSecret))
+	}
+	if r.Username != "" || r.Password != "" {
+		req.SetBasicAuth(r.Username, r.Password)
 	}
 	res := &XMLResponse{&Response{httptest.NewRecorder()}}
 	for key, value := range r.Headers {
