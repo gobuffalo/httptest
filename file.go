@@ -11,8 +11,8 @@ import (
 
 type File struct {
 	io.Reader
-	ParamName string
-	FileName  string
+	ParamName	string
+	FileName	string
 }
 
 func (r *Request) MultiPartPost(body interface{}, files ...File) (*Response, error) {

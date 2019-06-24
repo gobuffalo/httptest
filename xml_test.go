@@ -9,9 +9,9 @@ import (
 )
 
 type xBody struct {
-	Method  string `xml:"method"`
-	Name    string `xml:"name"`
-	Message string `xml:"message"`
+	Method	string	`xml:"method"`
+	Name	string	`xml:"name"`
+	Message	string	`xml:"message"`
 }
 
 func XMLApp() http.Handler {
@@ -19,15 +19,15 @@ func XMLApp() http.Handler {
 	p.Handle("GET", "/get", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		xml.NewEncoder(res).Encode(xBody{
-			Method:  req.Method,
-			Message: "Hello from Get!",
+			Method:		req.Method,
+			Message:	"Hello from Get!",
 		})
 	})
 	p.Handle("DELETE", "/delete", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		xml.NewEncoder(res).Encode(xBody{
-			Method:  req.Method,
-			Message: "Goodbye",
+			Method:		req.Method,
+			Message:	"Goodbye",
 		})
 	})
 	p.Handle("POST", "/post", func(res http.ResponseWriter, req *http.Request) {
@@ -57,8 +57,8 @@ func XMLApp() http.Handler {
 		sess, _ := Store.Get(req, "my-session")
 		if sess.Values["name"] != nil {
 			xml.NewEncoder(res).Encode(xBody{
-				Method: req.Method,
-				Name:   sess.Values["name"].(string),
+				Method:	req.Method,
+				Name:	sess.Values["name"].(string),
 			})
 		}
 	})

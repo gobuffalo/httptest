@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/markbates/hmax"
+	"github.com/gobuffalo/httptest/internal/takeon/github.com/markbates/hmax"
 )
 
 type JSON struct {
-	URL      string
-	handler  *Handler
-	Headers  map[string]string
-	Username string
-	Password string
+	URL		string
+	handler		*Handler
+	Headers		map[string]string
+	Username	string
+	Password	string
 }
 
 type JSONResponse struct {

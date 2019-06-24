@@ -9,16 +9,16 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ajg/form"
-	"github.com/markbates/hmax"
+	"github.com/gobuffalo/httptest/internal/takeon/github.com/ajg/form"
+	"github.com/gobuffalo/httptest/internal/takeon/github.com/markbates/hmax"
 )
 
 type Request struct {
-	URL      string
-	handler  *Handler
-	Headers  map[string]string
-	Username string
-	Password string
+	URL		string
+	handler		*Handler
+	Headers		map[string]string
+	Username	string
+	Password	string
 }
 
 func (r *Request) SetBasicAuth(username, password string) {
