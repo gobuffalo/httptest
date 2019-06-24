@@ -18,9 +18,9 @@ func Test_FileUpload(t *testing.T) {
 	rr, err := os.Open("./file_test.go")
 	r.NoError(err)
 	wf := File{
-		ParamName:	"MyFile",
-		FileName:	"foo.go",
-		Reader:		rr,
+		ParamName: "MyFile",
+		FileName:  "foo.go",
+		Reader:    rr,
 	}
 
 	res, err := w.HTML("/up").MultiPartPost(f, wf)

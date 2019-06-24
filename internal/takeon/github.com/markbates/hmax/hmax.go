@@ -12,16 +12,16 @@ import (
 )
 
 type HMAX struct {
-	Header	string
-	Hasher	func() hash.Hash
-	Secret	[]byte
+	Header string
+	Hasher func() hash.Hash
+	Secret []byte
 }
 
 func New(h string, s []byte) HMAX {
 	return HMAX{
-		Header:	h,
-		Secret:	s,
-		Hasher:	sha256.New,
+		Header: h,
+		Secret: s,
+		Hasher: sha256.New,
 	}
 }
 

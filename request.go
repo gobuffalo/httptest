@@ -14,11 +14,11 @@ import (
 )
 
 type Request struct {
-	URL		string
-	handler		*Handler
-	Headers		map[string]string
-	Username	string
-	Password	string
+	URL      string
+	handler  *Handler
+	Headers  map[string]string
+	Username string
+	Password string
 }
 
 func (r *Request) SetBasicAuth(username, password string) {

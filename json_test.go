@@ -9,11 +9,11 @@ import (
 )
 
 type jBody struct {
-	Method		string	`json:"method"`
-	Name		string	`json:"name"`
-	Message		string	`json:"message"`
-	Username	string	`json:"username"`
-	Password	string	`json:"password"`
+	Method   string `json:"method"`
+	Name     string `json:"name"`
+	Message  string `json:"message"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func JSONApp() http.Handler {
@@ -21,15 +21,15 @@ func JSONApp() http.Handler {
 	p.Handle("GET", "/get", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		json.NewEncoder(res).Encode(jBody{
-			Method:		req.Method,
-			Message:	"Hello from Get!",
+			Method:  req.Method,
+			Message: "Hello from Get!",
 		})
 	})
 	p.Handle("DELETE", "/delete", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		json.NewEncoder(res).Encode(jBody{
-			Method:		req.Method,
-			Message:	"Goodbye",
+			Method:  req.Method,
+			Message: "Goodbye",
 		})
 	})
 	p.Handle("POST", "/post", func(res http.ResponseWriter, req *http.Request) {
@@ -63,8 +63,8 @@ func JSONApp() http.Handler {
 		sess, _ := Store.Get(req, "my-session")
 		if sess.Values["name"] != nil {
 			json.NewEncoder(res).Encode(jBody{
-				Method:	req.Method,
-				Name:	sess.Values["name"].(string),
+				Method: req.Method,
+				Name:   sess.Values["name"].(string),
 			})
 		}
 	})

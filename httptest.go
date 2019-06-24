@@ -27,9 +27,9 @@ type encodable interface {
 
 type Handler struct {
 	http.Handler
-	Cookies		string
-	Headers		map[string]string
-	HmaxSecret	string
+	Cookies    string
+	Headers    map[string]string
+	HmaxSecret string
 }
 
 func (w *Handler) HTML(u string, args ...interface{}) *Request {
@@ -39,9 +39,9 @@ func (w *Handler) HTML(u string, args ...interface{}) *Request {
 	}
 	hs["Accept"] = "application/html"
 	return &Request{
-		URL:		fmt.Sprintf(u, args...),
-		handler:	w,
-		Headers:	hs,
+		URL:     fmt.Sprintf(u, args...),
+		handler: w,
+		Headers: hs,
 	}
 }
 
@@ -52,9 +52,9 @@ func (w *Handler) JSON(u string, args ...interface{}) *JSON {
 	}
 	hs["Accept"] = "application/json"
 	return &JSON{
-		URL:		fmt.Sprintf(u, args...),
-		handler:	w,
-		Headers:	hs,
+		URL:     fmt.Sprintf(u, args...),
+		handler: w,
+		Headers: hs,
 	}
 }
 
@@ -65,15 +65,15 @@ func (w *Handler) XML(u string, args ...interface{}) *XML {
 	}
 	hs["Accept"] = "application/xml"
 	return &XML{
-		URL:		fmt.Sprintf(u, args...),
-		handler:	w,
-		Headers:	hs,
+		URL:     fmt.Sprintf(u, args...),
+		handler: w,
+		Headers: hs,
 	}
 }
 
 func New(h http.Handler) *Handler {
 	return &Handler{
-		Handler:	h,
-		Headers:	map[string]string{},
+		Handler: h,
+		Headers: map[string]string{},
 	}
 }

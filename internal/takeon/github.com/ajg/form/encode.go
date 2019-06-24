@@ -6,7 +6,6 @@ package form
 
 import (
 	"encoding"
-	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -60,7 +59,7 @@ func (e Encoder) Encode(dst interface{}) error {
 	case err != nil:
 		return err
 	case l != len(s):
-		return errors.New("could not write data completely")
+		return fmt.Errorf("could not write data completely")
 	}
 	return nil
 }
