@@ -62,7 +62,8 @@ func (r *Request) perform(req *http.Request) *Response {
 	req.RequestURI = r.URL
 	req.Header.Set("Cookie", r.handler.Cookies)
 	r.handler.ServeHTTP(res, req)
-	c := res.Result().Header.Get("Set-Cookie")
+
+	c := res.Header().Get("Set-Cookie")
 	r.handler.Cookies = c
 	return res
 }
