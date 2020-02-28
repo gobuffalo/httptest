@@ -18,7 +18,7 @@ func (r *Request) MultiPartPost(body interface{}, files ...File) (*Response, err
 	if err != nil {
 		return nil, err
 	}
-	return r.perform(req), nil
+	return r.Perform(req), nil
 }
 
 func (r *Request) MultiPartPut(body interface{}, files ...File) (*Response, error) {
@@ -26,7 +26,7 @@ func (r *Request) MultiPartPut(body interface{}, files ...File) (*Response, erro
 	if err != nil {
 		return nil, err
 	}
-	return r.perform(req), nil
+	return r.Perform(req), nil
 }
 
 // this helper method was inspired by this blog post by Matt Aimonetti:
