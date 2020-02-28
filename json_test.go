@@ -25,6 +25,13 @@ func JSONApp() http.Handler {
 			Message: "Hello from Get!",
 		})
 	})
+	p.Handle("HEAD", "/head", func(res http.ResponseWriter, req *http.Request) {
+		res.WriteHeader(418)
+		json.NewEncoder(res).Encode(jBody{
+			Method:  req.Method,
+			Message: "Hello from Head!",
+		})
+	})
 	p.Handle("DELETE", "/delete", func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(201)
 		json.NewEncoder(res).Encode(jBody{
@@ -95,6 +102,23 @@ func Test_JSON_Get(t *testing.T) {
 	res.Bind(jb)
 	r.Equal("GET", jb.Method)
 	r.Equal("Hello from Get!", jb.Message)
+}
+
+func Test_JSON_Head(t *testing.T) {
+	r := require.New(t)
+	w := New(JSONApp())
+
+	c := w.JSON("/head")
+	r.Equal("/head", c.URL)
+
+	res, err := c.Do("HEAD", nil)
+	r.NoError(err)
+	r.Equal(418, res.Code)
+
+	jb := &jBody{}
+	res.Bind(jb)
+	r.Equal("HEAD", jb.Method)
+	r.Equal("Hello from Head!", jb.Message)
 }
 
 func Test_JSON_Delete(t *testing.T) {

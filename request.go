@@ -28,27 +28,35 @@ func (r *Request) SetBasicAuth(username, password string) {
 
 func (r *Request) Get() *Response {
 	req, _ := http.NewRequest("GET", r.URL, nil)
-	return r.perform(req)
+	return r.Perform(req)
 }
 
 func (r *Request) Delete() *Response {
 	req, _ := http.NewRequest("DELETE", r.URL, nil)
-	return r.perform(req)
+	return r.Perform(req)
 }
 
 func (r *Request) Post(body interface{}) *Response {
 	req, _ := http.NewRequest("POST", r.URL, toReader(body))
 	r.Headers["Content-Type"] = "application/x-www-form-urlencoded"
-	return r.perform(req)
+	return r.Perform(req)
 }
 
 func (r *Request) Put(body interface{}) *Response {
 	req, _ := http.NewRequest("PUT", r.URL, toReader(body))
 	r.Headers["Content-Type"] = "application/x-www-form-urlencoded"
-	return r.perform(req)
+	return r.Perform(req)
 }
 
-func (r *Request) perform(req *http.Request) *Response {
+func (r *Request) Do(method string, body interface{}) (*Response, error) {
+	req, err := http.NewRequest(method, r.URL, toReader(body))
+	if err != nil {
+		return nil, err
+	}
+	return r.Perform(req), nil
+}
+
+func (r *Request) Perform(req *http.Request) *Response {
 	if r.handler.HmaxSecret != "" {
 		hmax.SignRequest(req, []byte(r.handler.HmaxSecret))
 	}
