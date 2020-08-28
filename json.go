@@ -3,6 +3,7 @@ package httptest
 import (
 	"bytes"
 	"encoding/json"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 
@@ -38,6 +39,17 @@ func (r *JSON) Delete() *JSONResponse {
 func (r *JSON) Post(body interface{}) *JSONResponse {
 	b, _ := json.Marshal(body)
 	req, _ := http.NewRequest("POST", r.URL, bytes.NewReader(b))
+	return r.Perform(req)
+}
+
+func (r *JSON) PostForm(key string, value string) *JSONResponse {
+	payload := &bytes.Buffer{}
+	writer := multipart.NewWriter(payload)
+	_ = writer.WriteField(key, value)
+	_ := writer.Close()
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req, _ := http.NewRequest("POST", r.URL, payload)
 	return r.Perform(req)
 }
 
