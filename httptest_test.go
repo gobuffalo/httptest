@@ -95,6 +95,7 @@ func App() http.Handler {
 		}
 		fmt.Fprintln(res, req.FormValue("Name"))
 		fmt.Fprintln(res, h.Filename)
+		fmt.Fprintln(res, h.Header.Get("Content-Type"))
 	})
 	return p
 }
